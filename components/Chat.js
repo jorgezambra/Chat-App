@@ -5,6 +5,7 @@ import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 export default class Chat extends React.Component {
 
 // initiate state message
+
 constructor() {
   super();
   this.state = {
@@ -13,6 +14,7 @@ constructor() {
 }
 
 //once app loads
+
   componentDidMount() {
     let { name } = this.props.route.params;
 
@@ -20,7 +22,7 @@ constructor() {
 
     this.props.navigation.setOptions({ title: name });
 
-// sample message in GiftedChat message format is set on mount
+// sample message in GiftedChat
 
     this.setState({
       messages: [
@@ -44,7 +46,7 @@ constructor() {
     })
   }
 
-// function to be called when a user sends a message to append the messages
+// function to append the messages upon sending
 
   onSend(messages = []) {
     this.setState(previousState => ({
@@ -52,7 +54,7 @@ constructor() {
     }))
   }
 
-// to render bubble
+// render bubble
 
   renderBubble(props) {
     return (
@@ -83,7 +85,7 @@ constructor() {
               _id: 1,
             }}
           />
-          {/* Fix Android keyboard visualization */}
+{/* Fix Android keyboard visualization */}
           {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
       </View>
     );
