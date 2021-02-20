@@ -2,6 +2,8 @@ import React from 'react';
 import { View, StyleSheet, Platform, KeyboardAvoidingView, AsyncStorage } from 'react-native';
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
 import NetInfo from '@react-native-community/netinfo';
+import MapView from 'react-native-maps';
+import CustomActions from './CustomActions';
 
 // import firestore/firebase
 const firebase = require('firebase');
@@ -22,6 +24,8 @@ export default class Chat extends React.Component {
       },
       loggedInText: '',
       isConnected: false,
+      image: null,
+      location: null,
     }
 
 // firebase credentials
@@ -150,6 +154,8 @@ this.unsubscribe = this.referenceMessages
           name: data.user.name,
           avatar: data.user.avatar,
         },
+        image: data.image || '',
+        location: data.location,
       });
     });
     this.setState({
@@ -161,9 +167,11 @@ this.unsubscribe = this.referenceMessages
     const message = this.state.messages[0];
     this.referenceMessages.add({
       _id: message._id,
-      text: message.text || "",
+      text: message.text || '',
       createdAt: message.createdAt,
       user: message.user,
+      image: message.image || '',
+      location: message.location || null,
     });
   };
 
@@ -195,6 +203,35 @@ this.unsubscribe = this.referenceMessages
     }
   }
 
+// function to render CustomActions
+    renderCustomActions = (props) => {
+      return <CustomActions {...props} />;
+    };
+
+// function to check if currentMessage contains location data and render map view
+    renderCustomView(props) {
+      const { currentMessage } = props;
+      if (currentMessage.location) {
+        return (
+          <MapView
+            style={{
+              width: 150,
+              height: 100,
+              borderRadius: 13,
+              margin: 3
+            }}
+            region={{
+              latitude: currentMessage.location.latitude,
+              longitude: currentMessage.location.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          />
+        );
+      }
+      return null;
+    }
+
   render() {
     let { backgroundColor } = this.props.route.params;
     return (
@@ -205,7 +242,9 @@ this.unsubscribe = this.referenceMessages
 {/* Chat Visualization */}
         <GiftedChat
             renderBubble={this.renderBubble.bind(this)}
-            renderInputToolbar={this.renderInputToolbar}
+            renderInputToolbar={this.renderInputToolbar.bind(this)}
+            renderCustomView={this.renderCustomView}
+            renderActions={this.renderCustomActions}
             messages={this.state.messages}
             onSend={messages => this.onSend(messages)}
             user={this.state.user}
