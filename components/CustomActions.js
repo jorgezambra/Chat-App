@@ -101,7 +101,7 @@ export default class CustomActions extends React.Component {
       const ref = firebase
         .storage()
         .ref()
-        .child('images/' + imageArrayLength);
+        .child(`images/${imageArrayLength}`);
       const snapshot = await ref.put(blob);
       blob.close();
       return await snapshot.ref.getDownloadURL();
@@ -111,9 +111,9 @@ export default class CustomActions extends React.Component {
     };
 
   getLocation = async () => {
+    try {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status === 'granted') {
-      try {
+      if (status === 'granted') {
         const location = await Location.getCurrentPositionAsync({});
         if (location) {
           this.props.onSend({
@@ -123,9 +123,9 @@ export default class CustomActions extends React.Component {
             },
           });
         }
-      } catch (error) {
-        console.log(error);
       }
+    } catch (error) {
+        console.log(error);
     }
   };
 

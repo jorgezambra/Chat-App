@@ -54,8 +54,12 @@ this.referenceMessages = firebase.firestore().collection('messages');
         if (connection.isConnected) {
     this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) {
-        await firebase.auth().signInAnonymously();
-      }
+        try {
+          await firebase.auth().signInAnonymously();
+        } catch (error) {
+        console.log (`Unable to Sign in: ${error.message}`);
+        }
+    }
 
     let { name } = this.props.route.params;
     this.props.navigation.setOptions({ title: name });
@@ -204,9 +208,7 @@ this.unsubscribe = this.referenceMessages
   }
 
 // function to render CustomActions
-    renderCustomActions = (props) => {
-      return <CustomActions {...props} />;
-    };
+    renderCustomActions = (props) => <CustomActions {...props} />;
 
 // function to check if currentMessage contains location data and render map view
     renderCustomView(props) {
